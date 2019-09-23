@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon inspect index.js",
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,5 +16,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "morgan": "^1.9.1"
+  },
+  "engines": {
+    "node": "11.2.0"
   }
 }

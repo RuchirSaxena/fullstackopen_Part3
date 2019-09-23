@@ -10,6 +10,7 @@ const cors = require('cors');
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 
 //Middleware
+app.use(express.static('build'));
 app.use(bodyParser.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors());
@@ -37,7 +38,7 @@ let persons = [
   },
   {
     name: "Ruchir",
-    number: "2984294",
+    number: "9899435143",
     id: 5
   },
 ];
@@ -46,11 +47,11 @@ app.get('/', (req, res) => {
   res.send("App server is running");
 });
 
-app.get('/persons', (req, res) => {
+app.get('/api/persons', (req, res) => {
   res.send(persons);
 });
 
-app.get('/persons/info', (req, res) => {
+app.get('/api/persons/info', (req, res) => {
   const info = `<div>Phonebook has info for ${persons.length} people</div>
     <br/>
     <div> ${new Date()}</div>`;
@@ -67,14 +68,14 @@ app.get('/api/persons/:id', (req, res) => {
   }
 });
 
-app.delete('/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
   const filteredPersons = persons.filter(person => person.id !== id);
   persons = filteredPersons;
   res.status(204).end();
 });
 
-app.post('/persons', (req, res) => {
+app.post('/api/persons', (req, res) => {
   const request = req.body;
   let isValid = {};
   if (!isEmpty(request.name)) {

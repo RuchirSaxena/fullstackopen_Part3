@@ -7,7 +7,7 @@ const cors = require('cors');
 
 
 //Implementing morgan
-morgan.token('body', function (req, res) { return JSON.stringify( req.body) });
+morgan.token('body', (req, res) => JSON.stringify(req.body));
 
 //Middleware
 app.use(bodyParser.json());
@@ -51,17 +51,13 @@ app.get('/persons', (req, res) => {
 });
 
 app.get('/persons/info', (req, res) => {
-  console.log('info');
-  let info = `<div>Phonebook has info for ${persons.length} people</div>
+  const info = `<div>Phonebook has info for ${persons.length} people</div>
     <br/>
     <div> ${new Date()}</div>`;
-  console.log(info);
   res.send(info);
-
 });
 
 app.get('/api/persons/:id', (req, res) => {
-  console.log('test of browser');
   const id = Number(req.params.id);
   const personsData = persons.filter(person => person.id === id);
   if (personsData.length) {
@@ -79,7 +75,6 @@ app.delete('/persons/:id', (req, res) => {
 });
 
 app.post('/persons', (req, res) => {
-  console.log(req.body);
   const request = req.body;
   let isValid = {};
   if (!isEmpty(request.name)) {
@@ -125,7 +120,7 @@ const isDuplicate = (data, propertyName) => {
 };
 
 
-const port = 3003;
-app.listen(3003);
-console.log(`Server is running on port ${port}`);
+let PORT = process.env.PORT || 3003;
+app.listen(PORT);
+console.log(`Server is running on port ${PORT}`);
 

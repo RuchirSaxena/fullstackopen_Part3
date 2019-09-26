@@ -70,8 +70,12 @@ app.get('/api/persons/:id', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
-  const filteredPersons = persons.filter(person => person.id !== id);
-  persons = filteredPersons;
+  const filteredPersons = persons.find(person => person.id === id);
+  if(!filteredPersons){
+    res.send({error:'Id does not exists'}).status(500).end();
+  }
+  const updateIndex = persons.findIndex(person => person.id === filteredPersons.id);
+  persons.splice(updateIndex,1);
   res.status(204).end();
 });
 

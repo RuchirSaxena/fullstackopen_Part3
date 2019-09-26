@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Phonebook from './Phonebook';
 import PhoneBookForm from './PhoneBookForm';
 import Filter from './Filter';
-import { getAll, create, update, remove}  from '../services/phonebook';
+import { getAll, create, update, remove } from '../services/phonebook';
 import Notification from './Notification';
 const uuidV4 = require('uuid.v4');
 
@@ -20,7 +20,7 @@ const App = () => {
 
   const getPersonsData = () => {
     getAll()
-        .then(response => {
+      .then(response => {
         setPhonebookRecord(response);
       }).catch(err => console.log(err));
   }
@@ -35,14 +35,20 @@ const App = () => {
     setNewNumber(number);
   };
 
- 
+
   const handleDeletePhonebookRecord = (id) => {
     const phonebookRecord = phonebook.find(record => record.id === id);
     const isDelete = window.confirm(`Delete ${phonebookRecord.name} ?`);
     if (isDelete) {
       const copy = phonebook.filter(record => record.id !== id);
-      remove(phonebookRecord.id).then(response => setPhonebookRecord(copy))
-      .catch(err => setNotifiactionInfo((`Information of ${phonebookRecord.name} has already been removed from server`),'failure'))
+      remove(phonebookRecord.id).then(response => {
+        console.log(response);
+        if(response.error){
+          throw 'error!';
+        }
+        setPhonebookRecord(copy)
+      })
+        .catch(err => setNotifiactionInfo((`Information of ${phonebookRecord.name} has already been removed from server`), 'failure'))
     }
   };
 
@@ -65,10 +71,10 @@ const App = () => {
           id: phonebookRecord[0].id
         };
         updatePhoneBook(phonebookRecord[0].id, updatedPhoneRecord);
-     
+
       }
-        resetForm();
-        return;
+      resetForm();
+      return;
     }
 
     const newPerson = {
@@ -81,15 +87,15 @@ const App = () => {
       setPhonebookRecord(phonebook.concat(returnedRecord))
       setNotifiactionInfo((newName + " added"), 'success')
     })
-    .catch(err => console.log(err));
+      .catch(err => console.log(err));
   }
 
- 
+
   const updatePhoneBook = (id, record) => {
     update(id, record).then(updatedRecord => {
       console.log(updatedRecord);
-     // setPhonebookRecord(phonebook.map(record => record.id !== id ? record : updatedRecord));
-     setPhonebookRecord(updatedRecord);
+      // setPhonebookRecord(phonebook.map(record => record.id !== id ? record : updatedRecord));
+      setPhonebookRecord(updatedRecord);
     }).catch(err => console.log(err));
 
   }
@@ -105,24 +111,24 @@ const App = () => {
 
   }
 
-   const resetForm = () =>{
-      setNewName('');
-      setNewNumber('');
-   }
+  const resetForm = () => {
+    setNewName('');
+    setNewNumber('');
+  }
 
-   const setNotifiactionInfo =(notificationMessage,notificationType)=>{
-     setNotifiactionMessage(notificationMessage);
-     setNotifiactionType(notificationType);
-   }
+  const setNotifiactionInfo = (notificationMessage, notificationType) => {
+    setNotifiactionMessage(notificationMessage);
+    setNotifiactionType(notificationType);
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      
-    <h2> <Notification message={notificationMessage} type={notificationType} /> </h2>
+
+      <h2> <Notification message={notificationMessage} type={notificationType} /> </h2>
 
       <Filter handleSearch={handleSearch} />
-      
+
       <h2>add a new</h2>
 
       <PhoneBookForm

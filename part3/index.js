@@ -7,7 +7,7 @@ const cors = require('cors');
 
 
 //Implementing morgan
-morgan.token('body', (req, res) => JSON.stringify(req.body));
+morgan.token('body', (req, res) => (Object.keys(req.body).length === 0 ? 'No Params' : JSON.stringify(req.body)));
 
 //Middleware
 app.use(express.static('build'));
@@ -38,7 +38,7 @@ let persons = [
   },
   {
     name: "Ruchir",
-    number: "9899435143",
+    number: "+91-9899435143",
     id: 5
   },
 ];
@@ -73,6 +73,20 @@ app.delete('/api/persons/:id', (req, res) => {
   const filteredPersons = persons.filter(person => person.id !== id);
   persons = filteredPersons;
   res.status(204).end();
+});
+
+app.put('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const request = req.body;
+  const updateRecord = [{
+    name: request.name,
+    number: request.number,
+    id:id
+  }];
+  const filteredPersons = persons.find(person => person.id === id);
+  const updateIndex = persons.findIndex(person => person.id === filteredPersons.id);
+  persons.splice(updateIndex,1,...updateRecord);
+  res.send(persons).status(200).end();
 });
 
 app.post('/api/persons', (req, res) => {

@@ -1,10 +1,10 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const fs = require('fs');
 const cors = require('cors');
-
+const phonebookModel = require('./models/phonebook');
 
 //Implementing morgan
 morgan.token('body', (req, res) => (Object.keys(req.body).length === 0 ? 'No Params' : JSON.stringify(req.body)));
@@ -48,7 +48,12 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/persons', (req, res) => {
-  res.send(persons);
+  phonebookModel
+    .find({})
+    .then(records => {
+      res.json(records.map(record => record.toJSON()));
+    })
+
 });
 
 app.get('/api/persons/info', (req, res) => {
@@ -71,11 +76,11 @@ app.get('/api/persons/:id', (req, res) => {
 app.delete('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
   const filteredPersons = persons.find(person => person.id === id);
-  if(!filteredPersons){
-    res.send({error:'Id does not exists'}).status(500).end();
+  if (!filteredPersons) {
+    res.send({ error: 'Id does not exists' }).status(500).end();
   }
   const updateIndex = persons.findIndex(person => person.id === filteredPersons.id);
-  persons.splice(updateIndex,1);
+  persons.splice(updateIndex, 1);
   res.status(204).end();
 });
 
@@ -85,11 +90,11 @@ app.put('/api/persons/:id', (req, res) => {
   const updateRecord = [{
     name: request.name,
     number: request.number,
-    id:id
+    id: id
   }];
   const filteredPersons = persons.find(person => person.id === id);
   const updateIndex = persons.findIndex(person => person.id === filteredPersons.id);
-  persons.splice(updateIndex,1,...updateRecord);
+  persons.splice(updateIndex, 1, ...updateRecord);
   res.send(persons).status(200).end();
 });
 
@@ -139,7 +144,9 @@ const isDuplicate = (data, propertyName) => {
 };
 
 
-let PORT = process.env.PORT || 3003;
-app.listen(PORT);
-console.log(`Server is running on port ${PORT}`);
+let PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log(`Server is running on port  ${PORT}`);
+});
+
 
